@@ -220,4 +220,147 @@ describe("Model properties objects", () => {
             )
         })
     })
+    describe("when a user defines a property using a primitive value (not null or undefined)", () => {
+        describe("and the primitive value is a string", () => {
+            test("it converts a string to an optional string", () => {
+                const Model = types.model({
+                    foo: "bar"
+                })
+
+                const modelDescription = Model.describe()
+                expect(modelDescription).toBe("{ foo: string? }")
+            })
+            test("it uses the primitive value as the default value", () => {
+                const Model = types.model({
+                    foo: "bar"
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: "bar"
+                })
+            })
+        })
+        describe("and the primitive value is a number", () => {
+            test("it converts a number to an optional number", () => {
+                const Model = types.model({
+                    foo: 1
+                })
+
+                const modelDescription = Model.describe()
+                expect(modelDescription).toBe("{ foo: number? }")
+            })
+            test("it uses the primitive value as the default value", () => {
+                const Model = types.model({
+                    foo: 1
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: 1
+                })
+            })
+        })
+        describe("and the primitive value is a boolean", () => {
+            test("it converts a boolean to an optional boolean", () => {
+                const Model = types.model({
+                    foo: true
+                })
+
+                const modelDescription = Model.describe()
+                expect(modelDescription).toBe("{ foo: boolean? }")
+            })
+            test("it uses the primitive value as the default value", () => {
+                const Model = types.model({
+                    foo: true
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: true
+                })
+            })
+        })
+        describe("and the primitive value is a date", () => {
+            test("it converts a date to an optional date", () => {
+                const Model = types.model({
+                    foo: new Date()
+                })
+
+                const modelDescription = Model.describe()
+                expect(modelDescription).toBe("{ foo: Date? }")
+            })
+            test("it sets a default value with the date in unix milliseconds timestamp", () => {
+                const date = new Date("2023-07-24T04:26:04.701Z")
+                const Model = types.model({
+                    foo: date
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: 1690172764701
+                })
+            })
+        })
+    })
+    describe("when a user defines a property using a complex type", () => {
+        describe('and that type is "types.map"', () => {
+            test("it sets the default value to an empty map", () => {
+                const Model = types.model({
+                    foo: types.map(types.string)
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: {}
+                })
+            })
+        })
+        describe('and that type is "types.array"', () => {
+            test("it sets the default value to an empty array", () => {
+                const Model = types.model({
+                    foo: types.array(types.string)
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: []
+                })
+            })
+        })
+        describe("and that type is another model", () => {
+            test("it sets the default value to the default of that model", () => {
+                const Todo = types.model({
+                    task: types.optional(types.string, "test")
+                })
+
+                const TodoStore = types.model("TodoStore", {
+                    todo1: types.optional(Todo, () => Todo.create())
+                })
+
+                const modelSnapshot = getSnapshot(TodoStore.create())
+                expect(modelSnapshot).toEqual({
+                    todo1: {
+                        task: "test"
+                    }
+                })
+            })
+        })
+    })
+    describe("when a user defines a property using a function", () => {
+        describe("in production mode", () => {
+            test("it sets the default value to undefined", () => {
+                // @ts-ignore
+                const Model = types.model({
+                    foo: () => "bar"
+                })
+
+                const modelSnapshot = getSnapshot(Model.create())
+                expect(modelSnapshot).toEqual({
+                    foo: undefined
+                })
+            })
+            test("it does not throw an error", () => {})
+        })
+    })
 })

@@ -56,7 +56,7 @@ export enum Hook {
 
 `getOwnPropertyDescriptor`: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor
 
-`isPrimitive` - returns true if a value is null, undefined, string, number, boolean, or a Date instance.
+`isPrimitive` - returns true if a value is null, undefined, string, number, boolean, or a Date instance. packages/mobx-state-tree/src/utils.ts
 
 `isType` returns if it's an MST type, we use `isType`: packages/mobx-state-tree/src/core/type/type.ts
 
@@ -87,3 +87,5 @@ learned about `get`
 learned about enums
 writing tests is a great way to read code
 why would a person use object.assign?
+
+model.describe is cool
